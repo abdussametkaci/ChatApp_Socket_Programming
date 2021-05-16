@@ -3,8 +3,7 @@ body {
 }
 
 /* Full-width input fields */
-input[type=text],
-input[type=password] {
+input[type=text] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -167,4 +166,13 @@ button {
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+}
+
+#app {
+    border-radius: 25px;
+    background: #3abdc7;
+    padding: 20px;
+    width: 470px;
+    height: 200px;
+    margin: auto;
 }

@@ -10,34 +10,37 @@
 
 <body>
 
-    <h1>Welcome to FSM Chat APP</h1>
-    <p>
-        You can join the our chat community and meet different people. <br>
-        Hurry up. Now join. 😉
-    </p>
+    <div id="app">
+        <h1>Welcome to FSM Chat APP</h1>
+        <p>
+            You can join the our chat community and meet different people. <br>
+            Hurry up. Now join. 😉
+        </p>
 
-    <div class="container-btn">
-        <div class="container-center-btn">
-            <button id="join-btn" onclick="document.getElementById('login-form').style.display='block'">Join</button>
+        <div class="container-btn">
+            <div class="container-center-btn">
+                <button id="join-btn"
+                    onclick="document.getElementById('login-form').style.display='block'">Join</button>
+            </div>
         </div>
-    </div>
 
-    <div id="login-form" class="modal">
+        <div id="login-form" class="modal">
 
-        <form class="modal-content animate" action="chat.html">
-            <div class="imgcontainer">
-                <span onclick="document.getElementById('login-form').style.display='none'" class="close"
-                    title="Close Modal">&times;</span>
-                <img src="img/avatar.png" alt="Avatar" class="avatar">
-            </div>
+            <form class="modal-content animate" action="chat.html">
+                <div class="imgcontainer">
+                    <span onclick="document.getElementById('login-form').style.display='none'" class="close"
+                        title="Close Modal">&times;</span>
+                    <img src="img/avatar.png" alt="Avatar" class="avatar">
+                </div>
 
-            <div class="container">
-                <label for="username"><b>Username</b></label>
-                <input type="text" placeholder="Enter Username" name="username" required>
-                <button type="submit">Login</button>
-            </div>
+                <div class="container">
+                    <label for="username"><b>Username</b></label>
+                    <input type="text" placeholder="Enter Username" name="username" required autocomplete="off">
+                    <button type="submit">Login</button>
+                </div>
 
-        </form>
+            </form>
+        </div>
     </div>
 
 </body>

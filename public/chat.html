@@ -40,35 +40,47 @@
 
             </div>
         </div>
-
         <div class="column" style="width:60%; height:600px">
             <h2>Messages</h2>
-            <div id="messages" style=" height: 100%; overflow-y: scroll;">
-                <div class="container">
-                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
-                    <p><label class="time">11:00</label><br>Hello. How are you today?</p>
-                </div>
-                <div class="container darker">
-                    <img src="img/avatar.png" alt="Avatar" class="right" style="width:100%;">
-                    <p><label class="time">11:00</label><br>Hello. How are you today?</p>
-                </div>
-                <div class="container">
-                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
-                    <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+            <div>
+                <emoji-picker id="emoji-table"></emoji-picker>
+                <div id="messages" style=" height: 100%; overflow-y: scroll;">
+                    <div class="container">
+                        <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                    </div>
+                    <div class="container darker">
+                        <img src="img/avatar.png" alt="Avatar" class="right" style="width:100%;">
+                        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                    </div>
+                    <div class="container">
+                        <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                    </div>
+                    <div class="container">
+                        <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                    </div>
+                    <div class="container">
+                        <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                    </div>
                 </div>
             </div>
+            
+            
             <div class="send-message-container">
                 <button class="btn" id="btn-emoji">Emoji</button>
                 <button class="btn" id="btn-file">File</button>
                 <form id="chat-form">
-                    <input id="msg" type="text" placeholder="Enter Message" required autocomplete="off" />
+                    <input id="msg" type="text" placeholder="Enter Message" required autocomplete="off">
                     <button class="btn">Send</button>
                 </form>
-                <emoji-picker id="emoji-table"></emoji-picker>
             </div>
         </div>
 
     </div>
+
 
     <!--
     <div class="container">
