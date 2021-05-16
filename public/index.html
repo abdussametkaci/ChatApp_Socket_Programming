@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./public/css/style.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <title>Chat App</title>
 </head>
 
@@ -28,7 +28,7 @@
             <div class="imgcontainer">
                 <span onclick="document.getElementById('login-form').style.display='none'" class="close"
                     title="Close Modal">&times;</span>
-                <img src="./public/img/avatar.png" alt="Avatar" class="avatar">
+                <img src="img/avatar.png" alt="Avatar" class="avatar">
             </div>
 
             <div class="container">
@@ -40,18 +40,17 @@
         </form>
     </div>
 
-    <script>
-        // Get the modal
-        var modal = document.getElementById('login-form');
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
-
 </body>
+
+<script>
+    var modal = document.getElementById('login-form');
+
+    // When the user clicks anywhere outside of the login-form, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 
 </html>
