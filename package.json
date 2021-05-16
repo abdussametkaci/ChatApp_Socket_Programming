@@ -1,0 +1,28 @@
+{
+  "name": "chatapp_socket_programming",
+  "version": "1.0.0",
+  "description": "Real time chat app with socket",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "dev": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdussametkaci/ChatApp_Socket_Programming.git"
+  },
+  "author": "Abdussamet KACI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abdussametkaci/ChatApp_Socket_Programming/issues"
+  },
+  "homepage": "https://github.com/abdussametkaci/ChatApp_Socket_Programming#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "moment": "^2.29.1",
+    "socket.io": "^4.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
