@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/abdussametkaci/ChatApp_Socket_Programming#readme",
   "dependencies": {
+    "emoji-picker-element": "^1.4.0",
     "express": "^4.17.1",
     "moment": "^2.29.1",
     "socket.io": "^4.1.1"

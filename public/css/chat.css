@@ -54,3 +54,8 @@ body {
     clear: both;
   }
 
+  emoji-picker {
+	width: 400px;
+	height: 300px;
+  }
+
