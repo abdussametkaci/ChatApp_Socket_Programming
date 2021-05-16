@@ -5,13 +5,82 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chat App</title>
+    <link rel="stylesheet" href="css/chat.css" />
 </head>
 
 <body>
+    <div class="row">
+        <div class="column">
+            <div>
+                <h2>Current User</h2>
+                <div class="container">
+                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                    <p id="current-username"><b>Ahmet AK</b></p>
+                </div>
+                <button id="btn-leave">Leave</button>
+            </div>
+            <h2>Users</h2>
+            <div id="users" style=" height: 200px; overflow-y: scroll;">
+                <div class="container">
+                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                    <p id="current-username"><b>Ahmet AK</b></p>
+                </div>
+                <div class="container">
+                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                    <p id="current-username"><b>Ahmet AK</b></p>
+                </div>
+                <div class="container">
+                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                    <p id="current-username"><b>Ahmet AK</b></p>
+                </div>
+            </div>
+            <h2>Rooms</h2>
 
+            <div id="rooms" style=" height: 200px; overflow-y: scroll;">
 
+            </div>
+        </div>
+
+        <div class="column" style="width:60%; height:600px">
+            <h2>Messages</h2>
+            <div id="messages" style=" height: 100%; overflow-y: scroll;">
+                <div class="container">
+                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                    <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                </div>
+                <div class="container darker">
+                    <img src="img/avatar.png" alt="Avatar" class="right" style="width:100%;">
+                    <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                </div>
+                <div class="container">
+                    <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+                    <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+                </div>
+            </div>
+            <div class="send-message-container">
+                <button class="btn" id="btn-emoji">Emoji</button>
+                <button class="btn" id="btn-emoji">File</button>
+                <form id="chat-form">
+                    <input id="msg" type="text" placeholder="Enter Message" required autocomplete="off" />
+                    <button class="btn">Send</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!--
+    <div class="container">
+        <img src="img/avatar.png" alt="Avatar" style="width:100%;">
+        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+    </div>
+
+    <div class="container darker">
+        <img src="img/avatar.png" alt="Avatar" class="right" style="width:100%;">
+        <p><label class="time">11:00</label><br>Hello. How are you today?</p>
+    </div>
+    //-->
 </body>
-
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/client.js"></script>
