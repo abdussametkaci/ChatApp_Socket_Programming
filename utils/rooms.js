@@ -1,13 +1,16 @@
 const rooms = []
 
+// Join user to chat
 function addRoom(roomname) {
-    const room = {roomname}
-    room.push(room)
+    rooms.push(roomname)
     return rooms
 }
 
-function addUserToRoom(roomname, user) {
-    const index = rooms.findIndex(room => room.roomname === roomname)
-    rooms[index].users.push(user)
+function allRooms() {
     return rooms
+}
+
+module.exports = {
+     addRoom,
+     allRooms
 }

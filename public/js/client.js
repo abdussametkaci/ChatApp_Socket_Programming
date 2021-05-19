@@ -2,6 +2,8 @@ const roomForm = document.getElementById('room-form')
 const chatForm = document.getElementById('chat-form')
 const chatMessages = document.getElementById("messages")
 const currentUser = document.getElementById("current-username")
+const allUsers = document.getElementById("users")
+const allRooms = document.getElementById("rooms")
 
 //const socket = io()
 var socket = io()
@@ -38,6 +40,11 @@ socket.on('message', message => {
     chatMessages.scrollTop = chatMessages.scrollHeight
 })
 
+// Get new room name
+socket.on('newRoom', ({ rooms }) => {
+    displayRooms(rooms)
+})
+
 // Add message to DOM
 function displayMessage(message) {
     const div = document.createElement("div")
@@ -58,6 +65,7 @@ function displayMessage(message) {
 }
 
 function displayUsers(users) {
+    while (allUsers.lastChild) allUsers.removeChild(allUsers.lastChild)
     for (const user of users) {
         if (currentUser.innerText == user.username) continue
         const div = document.createElement("div")
@@ -75,19 +83,25 @@ function displayUsers(users) {
     }
 }
 
+function displayRooms(rooms){
+    while (allRooms.lastChild) allRooms.removeChild(allRooms.lastChild)
+    for(const room of rooms) {
+        const div = document.createElement("div")
+        div.classList.add("container")
+        div.setAttribute("id", room)
+        div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
+        <p class="username">${room}</p>`
+
+        document.getElementById("rooms").appendChild(div)
+    }
+}
+
 // New Room submit
 roomForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
     // Get new room name
     const msg = e.target.elements.msg.value
-
-    const div = document.createElement("div")
-    div.classList.add("container")
-    div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
-    <p class="username">${msg}</p>`
-
-    document.getElementById("rooms").appendChild(div)
 
     // Emit message to server
     socket.emit("newRoom", msg)
