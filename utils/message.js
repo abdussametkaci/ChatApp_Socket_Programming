@@ -8,4 +8,17 @@ function Message(username, text) {
     }
 }
 
-module.exports = Message
+function MessageInfo(username, target, text, time, type) {
+    return {
+        username,
+        target,
+        text,
+        time,
+        type
+    }
+}
+
+module.exports = {
+    Message,
+    MessageInfo
+}

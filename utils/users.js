@@ -3,6 +3,7 @@ const users = []
 // Join user to chat
 function userJoin(id, username, room) {
     const user = {id, username, room}
+    user.messages = []
     users.push(user)
     return user
 }
@@ -31,10 +32,22 @@ function getAllUsers() {
     return users
 }
 
+function addMessageInfo(message) {
+    const index = users.findIndex(user => user.username === message.username)
+    users[index].messages.push(message)
+}
+
+function getMessages(id) {
+    const index = users.findIndex(user => user.id === id)
+    return users[index].messages
+}
+
 module.exports = {
     userJoin,
     getCurrentUser,
     userLeave,
     getRoomUsers,
-    getAllUsers
+    getAllUsers,
+    addMessageInfo,
+    getMessages
 }

@@ -32,9 +32,21 @@ socket.on('onlineUsers', ({ users }) => {
 })
 
 // Message from server
+/*
 socket.on('message', message => {
     console.log(message)
     displayMessage(message)
+
+    // Scroll down
+    chatMessages.scrollTop = chatMessages.scrollHeight
+})
+*/
+
+
+// Message from server
+socket.on('messages', ({ messages }) => {
+    console.log(messages)
+    displayMessages(messages)
 
     // Scroll down
     chatMessages.scrollTop = chatMessages.scrollHeight
@@ -64,6 +76,39 @@ function displayMessage(message) {
     document.getElementById("messages").appendChild(div)
 }
 
+// Add messages to DOM
+function displayMessages(messages) {
+    while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild)
+    for (const message of messages) {
+        const div = document.createElement("div")
+        if (message.type === "sended" && username == message.username) {
+            div.classList.add("container")
+            div.classList.add("darker")
+            div.innerHTML = `<img src="img/avatar.png" alt="Avatar" class="right">
+    <p><label class="username-chat">${message.username} </label><label class="time">${message.time}</label><br>
+    ${message.text}</p>`
+        } else if (message.type === "received" && username == message.username) {
+            div.classList.add("container")
+            div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
+    <p><label class="username-chat">${message.target} </label><label class="time">${message.time}</label><br>
+    ${message.text}</p>`
+        } else if (message.type === "sended" && username != message.username) {
+            div.classList.add("container")
+            div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
+    <p><label class="username-chat">${message.username} </label><label class="time">${message.time}</label><br>
+    ${message.text}</p>`
+        } else {
+            div.classList.add("container")
+            div.classList.add("darker")
+            div.innerHTML = `<img src="img/avatar.png" alt="Avatar" class="right">
+    <p><label class="username-chat">${message.target} </label><label class="time">${message.time}</label><br>
+    ${message.text}</p>`
+        }
+
+        document.getElementById("messages").appendChild(div)
+    }
+}
+
 function displayUsers(users) {
     while (allUsers.lastChild) allUsers.removeChild(allUsers.lastChild)
     for (const user of users) {
@@ -78,14 +123,15 @@ function displayUsers(users) {
         document.getElementById(user.id).onclick = () => {
             targetClientId = user.id
             isSelectedTargetClient = true
+            socket.emit("messages", user.id)
             console.log("target client id: " + targetClientId + ", username: " + user.username)
         };
     }
 }
 
-function displayRooms(rooms){
+function displayRooms(rooms) {
     while (allRooms.lastChild) allRooms.removeChild(allRooms.lastChild)
-    for(const room of rooms) {
+    for (const room of rooms) {
         const div = document.createElement("div")
         div.classList.add("container")
         div.setAttribute("id", room)
@@ -120,11 +166,12 @@ chatForm.addEventListener('submit', (e) => {
 
     // Emit message to server
     if (isSelectedTargetClient) {
-        socket.emit("chatMessage", { msg, targetClientId })
+        let t = moment().format("h:mm a")
+        socket.emit("chatMessage", { msg, targetClientId, t })
         displayMessage({
             username,
             text: msg,
-            time: moment().format("h:mm a")
+            time: t
         })
     }
 

@@ -2,13 +2,18 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
-const Message = require('./utils/message')
+const {
+    Message,
+    MessageInfo
+} = require('./utils/message')
 const {
     userJoin,
     getCurrentUser,
     userLeave,
     getRoomUsers,
-    getAllUsers
+    getAllUsers,
+    addMessageInfo,
+    getMessages
 } = require('./utils/users')
 const {addRoom, allRooms} = require('./utils/rooms')
 
@@ -45,9 +50,22 @@ io.on('connection', socket => {
     })
 
     // Listen for chatMessage
-    socket.on("chatMessage", ({ msg, targetClientId }) => {
+    socket.on("chatMessage", ({ msg, targetClientId, t }) => {
         const user = getCurrentUser(socket.id)
-        io.to(targetClientId).emit("message", Message(user.username, msg))
+        const target = getCurrentUser(targetClientId)
+        addMessageInfo(MessageInfo(user.username, target.username, msg, t, "sended"))
+        addMessageInfo(MessageInfo(target.username, user.username, msg, t, "received"))
+        //io.to(targetClientId).emit("message", Message(user.username, msg))
+        io.to(targetClientId).emit("messages",{
+            messages: getMessages(targetClientId)
+        })
+    })
+
+    // Listen for messages
+    socket.on("messages", (id) => {
+        io.to(socket.id).emit("messages", {
+            messages: getMessages(id)
+        })
     })
 
     // Listen for new room
