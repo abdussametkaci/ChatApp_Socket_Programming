@@ -15,12 +15,18 @@
                 <div>
                     <div class="container">
                         <img src="img/avatar.png" alt="Avatar">
-                        <p class="username"><b>Current User</b></p>
+                        <p id="current-username" class="username"><b>Current User</b></p>
                     </div>
                     <button id="btn-leave">Leave</button>
+                    <form id="room-form">
+                        <input id="msg" type="text" placeholder="Enter New Room" required autocomplete="off">
+                        <button class="btn-new-room">New Room</button>
+                    </form>
                 </div>
                 <h2>Users</h2>
+                
                 <div id="users" style=" height: 150px; overflow-y: scroll;">
+                    <!--
                     <div class="container">
                         <img src="img/avatar.png" alt="Avatar">
                         <p class="username"><b>Ahmet AK</b></p>
@@ -33,10 +39,11 @@
                         <img src="img/avatar.png" alt="Avatar">
                         <p class="username"><b>Ahmet AK</b></p>
                     </div>
+                    //-->
                 </div>
                 <h2>Rooms</h2>
 
-                <div id="rooms" style=" height: 200px; overflow-y: scroll;">
+                <div id="rooms" style=" height: 150px; overflow-y: scroll;">
 
                 </div>
             </div>
@@ -45,6 +52,7 @@
                 <div style="height:100%">
                     <emoji-picker id="emoji-table"></emoji-picker>
                     <div id="messages" style=" height: 100%; overflow-y: scroll;">
+                         <!--
                         <div class="container">
                             <img src="img/avatar.png" alt="Avatar">
                             <p><label class="username-chat">Ahmet AK </label><label class="time">11:00</label><br>Hello. How are you today?</p>
@@ -65,16 +73,17 @@
                             <img src="img/avatar.png" alt="Avatar">
                             <p><label class="username-chat">Mehmet AK </label><label class="time">11:00</label><br>Hello. How are you today?</p>
                         </div>
+                         //-->
                     </div>
                 </div>
 
 
                 <div class="send-message-container">
-                    <button class="btn" id="btn-emoji">Emoji</button>
-                    <button class="btn" id="btn-file">File</button>
+                    <button id="btn-emoji">Emoji</button>
+                    <button id="btn-file">File</button>
                     <form id="chat-form">
                         <input id="msg" type="text" placeholder="Enter Message" required autocomplete="off">
-                        <button class="btn">Send</button>
+                        <button>Send</button>
                     </form>
                 </div>
             </div>
@@ -96,7 +105,11 @@
 
 </body>
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.2/qs.min.js" 
+  integrity="sha512-f0AM6x08kthGzMyDHZjBgjBCPp8V8ovlHYCI1jMkhViTeX3MykGCf/DnN1khWss/6d1105eAG4TniSKy6UhZrw==" 
+  crossorigin="anonymous"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/client.js"></script>
+<script src="js/moment.js"></script>
 
 </html>
