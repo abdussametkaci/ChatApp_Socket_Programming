@@ -56,7 +56,7 @@ io.on('connection', socket => {
         addMessageInfo(MessageInfo(user.username, target.username, msg, t, "sended"))
         addMessageInfo(MessageInfo(target.username, user.username, msg, t, "received"))
         //io.to(targetClientId).emit("message", Message(user.username, msg))
-        io.to(targetClientId).emit("messages",{
+        io.to(targetClientId).emit("messages", {
             messages: getMessages(targetClientId)
         })
     })

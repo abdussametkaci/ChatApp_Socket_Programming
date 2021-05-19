@@ -17,6 +17,7 @@ const { username } = Qs.parse(location.search, {
 })
 
 let targetClientId = 0
+let targetClientName = ""
 let isSelectedTargetClient = false
 
 let room = ""
@@ -45,9 +46,10 @@ socket.on('message', message => {
 
 // Message from server
 socket.on('messages', ({ messages }) => {
-    console.log(messages)
-    displayMessages(messages)
-
+    console.log("messsages: ", messages)
+    if(isSelectedTargetClient)
+        displayMessages(messages)
+    console.log("drawed")
     // Scroll down
     chatMessages.scrollTop = chatMessages.scrollHeight
 })
@@ -80,6 +82,7 @@ function displayMessage(message) {
 function displayMessages(messages) {
     while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild)
     for (const message of messages) {
+        if(!(messages.length > 0 && pairMessage(message, username, targetClientName))) continue
         const div = document.createElement("div")
         if (message.type === "sended" && username == message.username) {
             div.classList.add("container")
@@ -122,6 +125,7 @@ function displayUsers(users) {
         document.getElementById("users").appendChild(div)
         document.getElementById(user.id).onclick = () => {
             targetClientId = user.id
+            targetClientName = user.username
             isSelectedTargetClient = true
             socket.emit("messages", user.id)
             console.log("target client id: " + targetClientId + ", username: " + user.username)
@@ -173,6 +177,7 @@ chatForm.addEventListener('submit', (e) => {
             text: msg,
             time: t
         })
+        
     }
 
 
@@ -191,6 +196,14 @@ document.getElementById('btn-emoji').onclick = () => {
         document.getElementById('emoji-table').style.display = "inline-block"
         clicked = true
     }
+}
+
+function pairMessage(message, username, target) {
+    if((message.username === username && message.target === target) || (message.username === target && message.target === username)) {
+        return true
+    }
+
+    return false
 }
 
 

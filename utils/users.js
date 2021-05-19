@@ -49,5 +49,6 @@ module.exports = {
     getRoomUsers,
     getAllUsers,
     addMessageInfo,
-    getMessages
+    getMessages,
+    pairMessage
 }
