@@ -4,6 +4,7 @@ const chatMessages = document.getElementById("messages")
 const currentUser = document.getElementById("current-username")
 const allUsers = document.getElementById("users")
 const allRooms = document.getElementById("rooms")
+const message = document.getElementById('msg')
 
 //const socket = io()
 var socket = io()
@@ -185,6 +186,12 @@ chatForm.addEventListener('submit', (e) => {
     e.target.elements.msg.value = ""
     e.target.elements.msg.focus()
 })
+
+document.querySelector('emoji-picker')
+.addEventListener('emoji-click', event => {
+      console.log(event.detail)
+        message.value = message.value + event.detail.unicode
+    });
 
 let clicked = false
 document.getElementById('emoji-table').style.display = "none"
