@@ -220,7 +220,7 @@ chatForm.addEventListener('submit', (e) => {
         }
 
 
-    } else {
+    } else if(isSelectedRoom){
         let time = moment().format("h:mm a")
         if (isSelectedFile) {
             sendFile(selectedFile, username, targetClientId, time)
