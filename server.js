@@ -98,6 +98,11 @@ io.on('connection', socket => {
         })
     })
 
+    // Listen for chat room
+    socket.on("file", file => {
+       io.to(file.targetid).emit("file", file)
+    })
+
 
     // Runs when client disconnects
     socket.on('disconnect', () => {

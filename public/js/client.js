@@ -25,6 +25,9 @@ let isSelectedRoom = false
 let selectedRoomName = ""
 let isExistUser = false
 
+let isSelectedFile = false
+let selectedFile
+
 console.log(username, "joined to app")
 currentUser.innerText = username
 
@@ -52,7 +55,7 @@ socket.on('message', message => {
 // Message from server
 socket.on('messages', ({ messages }) => {
     console.log("messsages: ", messages)
-    if(isSelectedTargetClient)
+    if (isSelectedTargetClient)
         displayMessages(messages)
     console.log("drawed")
     // Scroll down
@@ -66,9 +69,16 @@ socket.on('newRoom', ({ rooms }) => {
 
 // Get new chat room
 socket.on('chatRoom', ({ messages }) => {
-    if(isSelectedRoom)
+    if (isSelectedRoom)
         displayRoomMessages(messages)
     chatMessages.scrollTop = chatMessages.scrollHeight
+})
+
+// Get file
+socket.on('file', file => {
+    console.log("file")
+    console.log(file)
+    downloadURI(file.data, file.filename)
 })
 
 // Add message to DOM
@@ -94,7 +104,7 @@ function displayMessage(message) {
 function displayMessages(messages) {
     while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild)
     for (const message of messages) {
-        if(!(messages.length > 0 && pairMessage(message, username, targetClientName))) continue
+        if (!(messages.length > 0 && pairMessage(message, username, targetClientName))) continue
         const div = document.createElement("div")
         if (message.type === "sended" && username == message.username) {
             div.classList.add("container")
@@ -159,7 +169,7 @@ function displayRooms(rooms) {
             isSelectedRoom = true
             isSelectedTargetClient = false
             selectedRoomName = room.roomname
-            socket.emit("joinRoom", {username, selectedRoomName})
+            socket.emit("joinRoom", { username, selectedRoomName })
             console.log("selected room: " + room.roomname)
         }
     }
@@ -197,18 +207,29 @@ chatForm.addEventListener('submit', (e) => {
     // Emit message to server
     if (isSelectedTargetClient) {
         let t = moment().format("h:mm a")
-        socket.emit("chatMessage", { msg, targetClientId, t })
-        displayMessage({
-            username,
-            text: msg,
-            time: t
-        })
-        
+        if (isSelectedFile) {
+            sendFile(selectedFile, username, targetClientId, t)
+            isSelectedFile = false
+        } else {
+            socket.emit("chatMessage", { msg, targetClientId, t })
+            displayMessage({
+                username,
+                text: msg,
+                time: t
+            })
+        }
+
+
     } else {
         let time = moment().format("h:mm a")
-        socket.emit("chatRoom", { selectedRoomName, username, text: msg, time })
-    }
+        if (isSelectedFile) {
+            sendFile(selectedFile, username, targetClientId, time)
+            isSelectedFile = false
+        } else {
+            socket.emit("chatRoom", { selectedRoomName, username, text: msg, time })
+        }
 
+    }
 
     // Clear input
     e.target.elements.msg.value = ""
@@ -216,8 +237,8 @@ chatForm.addEventListener('submit', (e) => {
 })
 
 document.querySelector('emoji-picker')
-.addEventListener('emoji-click', event => {
-      console.log(event.detail)
+    .addEventListener('emoji-click', event => {
+        console.log(event.detail)
         message.value = message.value + event.detail.unicode
     });
 
@@ -233,12 +254,50 @@ document.getElementById('btn-emoji').onclick = () => {
     }
 }
 
+document.getElementById('btn-file').onclick = () => {
+    let fileList
+    const inputElement = document.getElementById("myFile");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+        fileList = this.files; /* now you can work with the file list */
+        console.log("filename: ", fileList[0])
+        selectedFile = fileList[0]
+        message.value = fileList[0].name
+    }
+
+    document.getElementById("myFile").click();
+    isSelectedFile = true
+}
+
 function pairMessage(message, username, target) {
-    if((message.username === username && message.target === target) || (message.username === target && message.target === username)) {
+    if ((message.username === username && message.target === target) || (message.username === target && message.target === username)) {
         return true
     }
 
     return false
+}
+
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+async function sendFile(file, username, targetid, time) {
+    toBase64(file).then(data => {
+        socket.emit("file", { username, targetid, time, data, filename: file.name, filetype: file.type })
+    }).catch();
+}
+
+function downloadURI(uri, name) {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    delete link;
 }
 
 

@@ -95,3 +95,7 @@ p {
 .username {
     margin-top: 5px;
 }
+
+#myFile { 
+    display: none;
+}
