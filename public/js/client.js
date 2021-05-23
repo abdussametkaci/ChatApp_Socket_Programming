@@ -21,17 +21,21 @@ let targetClientId = 0
 let targetClientName = ""
 let isSelectedTargetClient = false
 
-let room = ""
+let isSelectedRoom = false
+let selectedRoomName = ""
+let isExistUser = false
+
 console.log(username, "joined to app")
 currentUser.innerText = username
 
 // Join chatRoom
-socket.emit('joinApp', { username, room })
+socket.emit('joinApp', username)
 
 // Get room and users
 socket.on('onlineUsers', ({ users }) => {
     displayUsers(users)
 })
+
 
 // Message from server
 /*
@@ -58,6 +62,13 @@ socket.on('messages', ({ messages }) => {
 // Get new room name
 socket.on('newRoom', ({ rooms }) => {
     displayRooms(rooms)
+})
+
+// Get new chat room
+socket.on('chatRoom', ({ messages }) => {
+    if(isSelectedRoom)
+        displayRoomMessages(messages)
+    chatMessages.scrollTop = chatMessages.scrollHeight
 })
 
 // Add message to DOM
@@ -128,6 +139,7 @@ function displayUsers(users) {
             targetClientId = user.id
             targetClientName = user.username
             isSelectedTargetClient = true
+            isSelectedRoom = false
             socket.emit("messages", user.id)
             console.log("target client id: " + targetClientId + ", username: " + user.username)
         };
@@ -139,11 +151,24 @@ function displayRooms(rooms) {
     for (const room of rooms) {
         const div = document.createElement("div")
         div.classList.add("container")
-        div.setAttribute("id", room)
+        div.setAttribute("id", room.roomname)
         div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
-        <p class="username">${room}</p>`
-
+        <p class="username">${room.roomname}</p>`
         document.getElementById("rooms").appendChild(div)
+        document.getElementById(room.roomname).onclick = () => {
+            isSelectedRoom = true
+            isSelectedTargetClient = false
+            selectedRoomName = room.roomname
+            socket.emit("joinRoom", {username, selectedRoomName})
+            console.log("selected room: " + room.roomname)
+        }
+    }
+}
+
+function displayRoomMessages(messages) {
+    while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild)
+    for (const message of messages) {
+        displayMessage(message)
     }
 }
 
@@ -152,14 +177,14 @@ roomForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
     // Get new room name
-    const msg = e.target.elements.msg.value
+    const msg = e.target.elements.msg_new_room.value
 
     // Emit message to server
     socket.emit("newRoom", msg)
 
     // Clear input
-    e.target.elements.msg.value = ""
-    e.target.elements.msg.focus()
+    e.target.elements.msg_new_room.value = ""
+    e.target.elements.msg_new_room.focus()
 })
 
 // Message submit
@@ -179,6 +204,9 @@ chatForm.addEventListener('submit', (e) => {
             time: t
         })
         
+    } else {
+        let time = moment().format("h:mm a")
+        socket.emit("chatRoom", { selectedRoomName, username, text: msg, time })
     }
 
 

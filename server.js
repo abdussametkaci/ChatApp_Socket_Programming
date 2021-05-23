@@ -10,12 +10,11 @@ const {
     userJoin,
     getCurrentUser,
     userLeave,
-    getRoomUsers,
     getAllUsers,
     addMessageInfo,
     getMessages
 } = require('./utils/users')
-const {addRoom, allRooms} = require('./utils/rooms')
+const { addRoom, allRooms, joinRoom, userExistInRoom, addMessage, getMessagesInRoom } = require('./utils/rooms')
 
 
 const app = express()
@@ -30,8 +29,8 @@ const botName = "Chat Bot"
 // Run when client connects
 io.on('connection', socket => {
     console.log("Client connected")
-    socket.on('joinApp', ({ username, room }) => {
-        const user = userJoin(socket.id, username, room)
+    socket.on('joinApp', username => {
+        const user = userJoin(socket.id, username)
         //socket.join(user.room)
         // console.log("New WS connection...")
 
@@ -70,9 +69,32 @@ io.on('connection', socket => {
 
     // Listen for new room
     socket.on("newRoom", roomname => {
-       addRoom(roomname)
+        addRoom(roomname)
         io.emit("newRoom", {
             rooms: allRooms()
+        })
+    })
+
+    // Listen for new room
+    socket.on("joinRoom", ({ username, selectedRoomName }) => {
+        let clientExist = userExistInRoom(selectedRoomName, username)
+        console.log("exist:", clientExist)
+        if (!clientExist) {
+            joinRoom(username, selectedRoomName)
+            socket.join(selectedRoomName)
+            addMessage(selectedRoomName, Message(botName, "Welcome " + username))
+        }
+        io.to(selectedRoomName).emit("chatRoom", {
+            messages: getMessagesInRoom(selectedRoomName)
+        })
+    })
+
+
+    // Listen for chat room
+    socket.on("chatRoom", ({ selectedRoomName, username, text, time }) => {
+        addMessage(selectedRoomName, { username, text, time })
+        io.to(selectedRoomName).emit("chatRoom", {
+            messages: getMessagesInRoom(selectedRoomName)
         })
     })
 
