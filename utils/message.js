@@ -1,5 +1,6 @@
-const moment = require('moment')
+const moment = require('moment')    // for time info
 
+// return an object message
 function Message(username, text) {
     return {
         username,
@@ -8,6 +9,7 @@ function Message(username, text) {
     }
 }
 
+// return message details
 function MessageInfo(username, target, text, time, type) {
     return {
         username,

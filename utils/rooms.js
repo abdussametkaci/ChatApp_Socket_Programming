@@ -1,16 +1,18 @@
-const rooms = []
+const rooms = [] // Store all rooms
 
-// Join user to chat
+// Add room
 function addRoom(roomname) {
     const room = {roomname, messages: [], users: []} 
     rooms.push(room)
     return rooms
 }
 
+// Get all rooms
 function allRooms() {
     return rooms
 }
 
+// Add message to room
 function addMessage(roomname, message) {
     const index = rooms.findIndex(room => room.roomname === roomname)
     if (index !== -1) {
@@ -20,11 +22,13 @@ function addMessage(roomname, message) {
     }
 }
 
+// Get all messages in the room
 function getMessagesInRoom(roomname) {
     const index = rooms.findIndex(room => room.roomname === roomname)
     return rooms[index].messages
 }
 
+// Client join to the room
 function joinRoom(username, roomname) {
     const index = rooms.findIndex(room => room.roomname === roomname)
     if (index !== -1) {
@@ -34,6 +38,7 @@ function joinRoom(username, roomname) {
     }
 }
 
+// Check whether client is in the room
 function userExistInRoom(roomname, username) {
     const index = rooms.findIndex(room => room.roomname === roomname)
     if (index !== -1) {
