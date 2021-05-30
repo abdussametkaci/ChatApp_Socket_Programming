@@ -51,14 +51,14 @@ io.on('connection', socket => {
 
     // Listen for chatMessage
     // t is time
-    socket.on("chatMessage", ({ msg, targetClientId, t }) => {
+    socket.on("chatMessage", ({ msg, targetClientId }) => {
         const user = getCurrentUser(socket.id)
         const target = getCurrentUser(targetClientId)
         // Save messages
         // User send a message
         // and target client receive message
-        addMessageInfo(MessageInfo(user.username, target.username, msg, t, "sended"))
-        addMessageInfo(MessageInfo(target.username, user.username, msg, t, "received"))
+        addMessageInfo(MessageInfo(user.username, target.username, msg, "sended"))
+        addMessageInfo(MessageInfo(target.username, user.username, msg, "received"))
         // Send all mesaages to target client
         io.to(targetClientId).emit("messages", {
             messages: getMessages(targetClientId)
@@ -102,8 +102,8 @@ io.on('connection', socket => {
 
 
     // Listen for chat room
-    socket.on("chatRoom", ({ selectedRoomName, username, text, time }) => {
-        addMessage(selectedRoomName, { username, text, time })  // Add message to room
+    socket.on("chatRoom", ({ selectedRoomName, username, text }) => {
+        addMessage(selectedRoomName, Message(username, text))  // Add message to room
         io.to(selectedRoomName).emit("chatRoom", {
             messages: getMessagesInRoom(selectedRoomName)
         })

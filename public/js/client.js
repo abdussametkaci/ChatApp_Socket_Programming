@@ -202,31 +202,29 @@ chatForm.addEventListener('submit', (e) => {
 
     // Emit message to server
     if (isSelectedTargetClient) {
-        let t = moment().format("h:mm a")   // Get time
         if (isSelectedFile) {
-            sendFile(selectedFile, username, targetClientId, t) // Send file to target client
+            sendFile(selectedFile, username, targetClientId) // Send file to target client
             isSelectedFile = false
         } else {
             // Otherwise send a message
-            socket.emit("chatMessage", { msg, targetClientId, t })
+            socket.emit("chatMessage", { msg, targetClientId })
             // And display it
             displayMessage({
                 username,
                 text: msg,
-                time: t
+                time: moment().format("h:mm a")
             })
         }
 
 
     } else if(isSelectedRoom){
-        let time = moment().format("h:mm a")
         if (isSelectedFile) {
             // will be updated
             //sendFile(selectedFile, username, targetClientId, time)
             isSelectedFile = false
         } else {
             // Send message for room
-            socket.emit("chatRoom", { selectedRoomName, username, text: msg, time })
+            socket.emit("chatRoom", { selectedRoomName, username, text: msg })
         }
 
     }
@@ -290,9 +288,9 @@ const toBase64 = file => new Promise((resolve, reject) => {
 });
 
 // Send file to server
-async function sendFile(file, username, targetid, time) {
+async function sendFile(file, username, targetid) {
     toBase64(file).then(data => {
-        socket.emit("file", { username, targetid, time, data, filename: file.name, filetype: file.type })
+        socket.emit("file", { username, targetid, data, filename: file.name, filetype: file.type })
     }).catch();
 }
 

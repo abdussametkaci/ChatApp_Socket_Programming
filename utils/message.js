@@ -10,12 +10,12 @@ function Message(username, text) {
 }
 
 // return message details
-function MessageInfo(username, target, text, time, type) {
+function MessageInfo(username, target, text, type) {
     return {
         username,
         target,
         text,
-        time,
+        time: moment().format("h:mm a"),
         type
     }
 }
