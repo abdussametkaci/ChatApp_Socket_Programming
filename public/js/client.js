@@ -23,16 +23,21 @@ const { username } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 })
 
+// User Variables
 let targetClientId = 0
 let targetClientName = ""
 let isSelectedTargetClient = false
 
+// Room Variables
 let isSelectedRoom = false
 let selectedRoomName = ""
 let isExistUser = false
 
+// File Variables
 let isSelectedFile = false
 let selectedFile
+
+let msg = "" // Message text
 
 console.log(username, "joined to app")
 currentUser.innerText = username
@@ -55,7 +60,7 @@ socket.on('messages', ({ messages }) => {
     chatMessages.scrollTop = chatMessages.scrollHeight
 })
 
-// Get new room name
+// Get rooms
 socket.on('newRoom', ({ rooms }) => {
     displayRooms(rooms)
 })
@@ -64,17 +69,25 @@ socket.on('newRoom', ({ rooms }) => {
 socket.on('chatRoom', ({ messages }) => {
     if (isSelectedRoom)
         displayRoomMessages(messages)
-    chatMessages.scrollTop = chatMessages.scrollHeight
+    chatMessages.scrollTop = chatMessages.scrollHeight // Show scroll down
+})
+let fileid = 0
+// Get fileID
+socket.on('file', fileID => {
+    console.log("fileid: " + fileID)
+    fileid = fileID
+    //downloadURI(file.data, file.filename)
 })
 
 // Get file
-socket.on('file', file => {
+socket.on("getFile", ({file}) => {
     console.log("file")
     console.log(file)
     downloadURI(file.data, file.filename)
 })
 
 // Add message to DOM
+// Used for client side, showing message
 function displayMessage(message) {
     const div = document.createElement("div")
     if (username != message.username) {
@@ -90,27 +103,40 @@ function displayMessage(message) {
     ${message.text}</p>`
     }
 
+    if(message.type === "file") {
+        div.setAttribute("id", message.id)
+    }
+
     document.getElementById("messages").appendChild(div)
+
+    if(message.type === "file") {
+        document.getElementById(message.id).onclick = () => {
+            socket.emit("getFile", message.id)
+            console.log("file id: " + message.id)
+         }
+    }
 }
 
-// Add messages to DOM
+// Add messages to DOM -> it is used for private messages
 function displayMessages(messages) {
-    while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild)
+    while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild) // Clear div
     for (const message of messages) {
-        if (!(messages.length > 0 && pairMessage(message, username, targetClientName))) continue
+        if (!(messages.length > 0 && pairMessage(message, username, targetClientName))) continue // Only show pair messages
+       
         const div = document.createElement("div")
-        if (message.type === "sended" && username == message.username) {
+        // Show message for own or others
+        if (message.state === "sended" && username == message.username) {
             div.classList.add("container")
             div.classList.add("darker")
             div.innerHTML = `<img src="img/avatar.png" alt="Avatar" class="right">
     <p><label class="username-chat">${message.username} </label><label class="time">${message.time}</label><br>
     ${message.text}</p>`
-        } else if (message.type === "received" && username == message.username) {
+        } else if (message.state === "received" && username == message.username) {
             div.classList.add("container")
             div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
     <p><label class="username-chat">${message.target} </label><label class="time">${message.time}</label><br>
     ${message.text}</p>`
-        } else if (message.type === "sended" && username != message.username) {
+        } else if (message.state === "sended" && username != message.username) {
             div.classList.add("container")
             div.innerHTML = `<img src="img/avatar.png" alt="Avatar">
     <p><label class="username-chat">${message.username} </label><label class="time">${message.time}</label><br>
@@ -123,13 +149,26 @@ function displayMessages(messages) {
     ${message.text}</p>`
         }
 
+        // If file type is file, add id as message id
+        if(message.type === "file") {
+            div.setAttribute("id", message.id)
+        }
+
         document.getElementById("messages").appendChild(div)
+
+        // Add click event for all file types, and request file
+        if(message.type === "file") {
+            document.getElementById(message.id).onclick = () => {
+                socket.emit("getFile", message.id)
+                console.log("file id: " + message.id)
+             }
+        }
     }
 }
 
 // Add clients to DOM
 function displayUsers(users) {
-    while (allUsers.lastChild) allUsers.removeChild(allUsers.lastChild)
+    while (allUsers.lastChild) allUsers.removeChild(allUsers.lastChild) // Clear users div
     for (const user of users) {
         if (currentUser.innerText == user.username) continue
         const div = document.createElement("div")
@@ -139,6 +178,7 @@ function displayUsers(users) {
         <p class="username"><b>${user.username} </b></p>`
 
         document.getElementById("users").appendChild(div)
+        // Add clicl event for selecting client
         document.getElementById(user.id).onclick = () => {
             targetClientId = user.id
             targetClientName = user.username
@@ -152,19 +192,21 @@ function displayUsers(users) {
 
 // Add romms to DOM
 function displayRooms(rooms) {
-    while (allRooms.lastChild) allRooms.removeChild(allRooms.lastChild)
+    while (allRooms.lastChild) allRooms.removeChild(allRooms.lastChild) // Clear messages div
     for (const room of rooms) {
+        // create div element and display room
         const div = document.createElement("div")
         div.classList.add("container")
-        div.setAttribute("id", room.roomname)
+        div.setAttribute("id", room.roomname)   // Add id to room div as room name
         div.innerHTML = `<img src="img/room.png" alt="Avatar">
         <p class="username">${room.roomname}</p>`
         document.getElementById("rooms").appendChild(div)
+        // Add click event to div for select room name
         document.getElementById(room.roomname).onclick = () => {
             isSelectedRoom = true
             isSelectedTargetClient = false
             selectedRoomName = room.roomname
-            socket.emit("joinRoom", { username, selectedRoomName })
+            socket.emit("joinRoom", selectedRoomName)
             console.log("selected room: " + room.roomname)
         }
     }
@@ -172,8 +214,8 @@ function displayRooms(rooms) {
 
 // Add room messages to DOM
 function displayRoomMessages(messages) {
-    while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild)
-    for (const message of messages) {
+    while (chatMessages.lastChild) chatMessages.removeChild(chatMessages.lastChild) // Clear div messages
+    for (const message of messages) {   // Add messages to div
         displayMessage(message)
     }
 }
@@ -198,21 +240,31 @@ chatForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
     // Get message text
-    const msg = e.target.elements.msg.value
+    msg = e.target.elements.msg.value
 
     // Emit message to server
     if (isSelectedTargetClient) {
         if (isSelectedFile) {
-            sendFile(selectedFile, username, targetClientId) // Send file to target client
-            isSelectedFile = false
+            //socket.emit("chatMessage", { msg: selectedFile.name, targetClientId, type: "file" })
+            sendFile("chatMessage", selectedFile, username, targetClientId) // Send file to target client
+            isSelectedFile = false  // reset selected file
+            // display message
+            displayMessage({
+                username,
+                text: msg,
+                time: moment().format("h:mm a"),
+                type: "file"
+            })
         } else {
             // Otherwise send a message
-            socket.emit("chatMessage", { msg, targetClientId })
+            socket.emit("chatMessage", { msg, targetClientId, type: "text" })
+
             // And display it
             displayMessage({
                 username,
                 text: msg,
-                time: moment().format("h:mm a")
+                time: moment().format("h:mm a"),
+                type: "text"
             })
         }
 
@@ -220,11 +272,11 @@ chatForm.addEventListener('submit', (e) => {
     } else if(isSelectedRoom){
         if (isSelectedFile) {
             // will be updated
-            //sendFile(selectedFile, username, targetClientId, time)
+            sendFile("chatRoom", selectedFile, username, selectedRoomName)
             isSelectedFile = false
         } else {
             // Send message for room
-            socket.emit("chatRoom", { selectedRoomName, username, text: msg })
+            socket.emit("chatRoom", { selectedRoomName, username, msg, type: "text" })
         }
 
     }
@@ -288,9 +340,14 @@ const toBase64 = file => new Promise((resolve, reject) => {
 });
 
 // Send file to server
-async function sendFile(file, username, targetid) {
+// msg -> my file object
+// target -> to client or room
+async function sendFile(event, file, username, target) {
     toBase64(file).then(data => {
-        socket.emit("file", { username, targetid, data, filename: file.name, filetype: file.type })
+        if(event === "chatMessage")
+            socket.emit(event, { msg: { username, targetid: target, data, filename: file.name, filetype: file.type }, targetClientId: target, type: "file" })
+        else // chatRoom
+            socket.emit(event, { selectedRoomName: target, username, msg: { username, targetid: target, data, filename: file.name, filetype: file.type }, type: "file" })
     }).catch();
 }
 
@@ -304,5 +361,3 @@ function downloadURI(uri, name) {
     document.body.removeChild(link);
     delete link;
 }
-
-

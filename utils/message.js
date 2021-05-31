@@ -1,22 +1,25 @@
-const moment = require('moment')    // for time info
+const moment = require('moment') // for time info
 
 // return an object message
-function Message(username, text) {
+function Message(username, text, type) {
     return {
         username,
         text,
-        time: moment().format("h:mm a")
+        time: moment().format("h:mm a"),
+        type
     }
 }
 
-// return message details
-function MessageInfo(username, target, text, type) {
+// return message details, it stores more information
+function MessageInfo(username, target, text, state, type, id) {
     return {
         username,
         target,
         text,
         time: moment().format("h:mm a"),
-        type
+        state,
+        type,
+        id
     }
 }
 

@@ -22,11 +22,6 @@ function userLeave(id) {
     }
 }
 
-// Get room users
-function getRoomUsers(romm) {
-    return users.filter(user => user.room === romm)
-}
-
 // Get all users
 function getAllUsers() {
     return users
@@ -48,7 +43,6 @@ module.exports = {
     userJoin,
     getCurrentUser,
     userLeave,
-    getRoomUsers,
     getAllUsers,
     addMessageInfo,
     getMessages

@@ -15,7 +15,18 @@ const {
     addMessageInfo,
     getMessages
 } = require('./utils/users')
-const { addRoom, allRooms, joinRoom, userExistInRoom, addMessage, getMessagesInRoom } = require('./utils/rooms')
+const { 
+    addRoom, 
+    allRooms, 
+    joinRoom, 
+    userExistInRoom, 
+    addMessage, 
+    getMessagesInRoom 
+} = require('./utils/rooms')
+const { 
+    addFile, 
+    getFile 
+} = require('./utils/files')
 
 // Set the socket
 const app = express()
@@ -50,15 +61,28 @@ io.on('connection', socket => {
     })
 
     // Listen for chatMessage
-    // t is time
-    socket.on("chatMessage", ({ msg, targetClientId }) => {
+    socket.on("chatMessage", ({ msg, targetClientId, type }) => {
         const user = getCurrentUser(socket.id)
         const target = getCurrentUser(targetClientId)
         // Save messages
         // User send a message
         // and target client receive message
-        addMessageInfo(MessageInfo(user.username, target.username, msg, "sended"))
-        addMessageInfo(MessageInfo(target.username, user.username, msg, "received"))
+        if(type === "text") {
+            // Add message for two users
+            // A client sends message and other side one receives message
+            addMessageInfo(MessageInfo(user.username, target.username, msg, "sended", type, 0))
+            addMessageInfo(MessageInfo(target.username, user.username, msg, "received", type, 0))
+        } else {    // file
+            let fileID = addFile(msg) // Storage file
+            // Add file message for two sides one
+            addMessageInfo(MessageInfo(user.username, target.username, msg.filename, "sended", type, fileID))
+            addMessageInfo(MessageInfo(target.username, user.username, msg.filename, "received", type, fileID))
+            // And send to client
+            io.to(targetClientId).emit("messages", {
+                messages: getMessages(targetClientId)
+            })
+        }
+        
         // Send all mesaages to target client
         io.to(targetClientId).emit("messages", {
             messages: getMessages(targetClientId)
@@ -83,16 +107,16 @@ io.on('connection', socket => {
     })
 
     // Listen for join room
-    socket.on("joinRoom", ({ username, selectedRoomName }) => {
-        let clientExist = userExistInRoom(selectedRoomName, username) // Check this client in room
-        console.log("exist:", clientExist)
+    socket.on("joinRoom", selectedRoomName => {
+        let user = getCurrentUser(socket.id)
+        let clientExist = userExistInRoom(selectedRoomName, user.username) // Check this client in room
         // If not exist
         if (!clientExist) {
             // join room
-            joinRoom(username, selectedRoomName)
+            joinRoom(user.username, selectedRoomName)
             socket.join(selectedRoomName)
             // Server send message to joined client
-            addMessage(selectedRoomName, Message(botName, "Welcome " + username))
+            addMessage(selectedRoomName, Message(botName, "Welcome " + user.username, "text"))
         }
         // Send all messages in room to clients in room
         io.to(selectedRoomName).emit("chatRoom", {
@@ -102,17 +126,35 @@ io.on('connection', socket => {
 
 
     // Listen for chat room
-    socket.on("chatRoom", ({ selectedRoomName, username, text }) => {
-        addMessage(selectedRoomName, Message(username, text))  // Add message to room
+    socket.on("chatRoom", ({ selectedRoomName, username, msg, type }) => {
+        if(type === "text")
+            addMessage(selectedRoomName, MessageInfo(username, selectedRoomName, msg, "sended", type, 0))  // Add message to room
+        else {
+            let fileID = addFile(msg) // storage file
+            // Add file messsage
+            // Not data, less info
+            addMessage(selectedRoomName, MessageInfo(username, selectedRoomName, msg.filename, "sended", type, fileID))
+        }
+        // Send messages in room to room
         io.to(selectedRoomName).emit("chatRoom", {
             messages: getMessagesInRoom(selectedRoomName)
         })
     })
-
+    /*
     // Listen for file
     socket.on("file", file => {
+        // Send file id to target client
+        let fileID = addFile(file)
+        io.to(file.targetid).emit("file", fileID)
+    })
+    */
+
+    // Listen for getFile
+    socket.on("getFile", selectedFileID => {
         // Send file to target client
-        io.to(file.targetid).emit("file", file)
+        let file = getFile(selectedFileID)
+        console.log(file)
+        io.to(socket.id).emit("getFile", {file: file.file})
     })
 
 
@@ -120,7 +162,7 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         const user = userLeave(socket.id)   // Client leave from server
         if (user) {
-            // Send users info
+            // Send online users
             io.emit("onlineUsers", {
                 users: getAllUsers()
             })

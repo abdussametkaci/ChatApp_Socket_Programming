@@ -2,7 +2,7 @@ const rooms = [] // Store all rooms
 
 // Add room
 function addRoom(roomname) {
-    const room = {roomname, messages: [], users: []} 
+    const room = { roomname, messages: [], users: [] }
     rooms.push(room)
     return rooms
 }
