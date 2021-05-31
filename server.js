@@ -77,8 +77,13 @@ io.on('connection', socket => {
             // Add file message for two sides one
             addMessageInfo(MessageInfo(user.username, target.username, msg.filename, "sended", type, fileID))
             addMessageInfo(MessageInfo(target.username, user.username, msg.filename, "received", type, fileID))
-            // And send to client
+            // And send to other client
             io.to(targetClientId).emit("messages", {
+                messages: getMessages(targetClientId)
+            })
+
+            // And send to own client
+            io.to(user.id).emit("messages", {
                 messages: getMessages(targetClientId)
             })
         }
