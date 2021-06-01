@@ -51,11 +51,16 @@ function userExistInRoom(roomname, username) {
     return false
 }
 
+function clearRooms() {
+    rooms.splice(0, rooms.length)
+}
+
 module.exports = {
     addRoom,
     allRooms,
     addMessage,
     getMessagesInRoom,
     joinRoom,
-    userExistInRoom
+    userExistInRoom,
+    clearRooms
 }

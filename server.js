@@ -21,7 +21,8 @@ const {
     joinRoom, 
     userExistInRoom, 
     addMessage, 
-    getMessagesInRoom 
+    getMessagesInRoom,
+    clearRooms
 } = require('./utils/rooms')
 const { 
     addFile, 
@@ -173,6 +174,9 @@ io.on('connection', socket => {
             })
         }
         console.log("disconnected: " + user.username)
+
+        // If no client in app, delete all rooms
+        if(getAllUsers().length == 0) clearRooms()
     })
 })
 
